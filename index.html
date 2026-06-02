@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learn With Misham - Quran Study</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Learn With Misham</h1>
+        <p>A Project of Jugnu Social Welfare Organization</p>
+    </header>
+
+    <div class="controls">
+
+        <label>Select Surah</label>
+
+        <select id="surahSelect">
+            <option value="1">Al-Fatihah</option>
+            <option value="2">Al-Baqarah</option>
+            <option value="3">Ali-Imran</option>
+        </select>
+
+        <button onclick="loadSurah()">
+            Load Surah
+        </button>
+
+    </div>
+
+    <div id="quranContainer">
+
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/app.js"></script>
+
+</body>
+</html>

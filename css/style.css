@@ -1,0 +1,30 @@
+body{
+    font-family: Arial, sans-serif;
+    max-width:1000px;
+    margin:auto;
+    padding:20px;
+}
+
+header{
+    text-align:center;
+}
+
+.controls{
+    margin:20px 0;
+}
+
+.ayah{
+    direction: rtl;
+    font-size: 32px;
+    line-height: 2;
+    margin-bottom:20px;
+}
+
+.word{
+    cursor:pointer;
+    padding:4px;
+}
+
+.highlight{
+    background:yellow;
+}

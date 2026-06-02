@@ -1,24 +1,26 @@
-function saveHighlight(id){
+const STORAGE_KEYS = {
+    PROFILE: "lwm_profile",
+    PROGRESS: "lwm_progress"
+};
 
-    let highlights =
-        JSON.parse(
-            localStorage.getItem("highlights")
-        ) || [];
-
-    if(!highlights.includes(id)){
-
-        highlights.push(id);
-
-        localStorage.setItem(
-            "highlights",
-            JSON.stringify(highlights)
-        );
-    }
+function saveData(key, data) {
+    localStorage.setItem(
+        key,
+        JSON.stringify(data)
+    );
 }
 
-function getHighlights(){
+function loadData(key, defaultValue = null) {
 
-    return JSON.parse(
-        localStorage.getItem("highlights")
-    ) || [];
+    const data = localStorage.getItem(key);
+
+    if (!data) {
+        return defaultValue;
+    }
+
+    try {
+        return JSON.parse(data);
+    } catch {
+        return defaultValue;
+    }
 }

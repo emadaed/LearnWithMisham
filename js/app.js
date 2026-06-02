@@ -1,4 +1,4 @@
-async function loadSurah(){
+async function loadSurah() {
 
     const surah =
         document.getElementById(
@@ -18,7 +18,7 @@ async function loadSurah(){
     );
 }
 
-function displayAyahs(ayahs){
+function displayAyahs(ayahs) {
 
     const container =
         document.getElementById(
@@ -27,52 +27,67 @@ function displayAyahs(ayahs){
 
     container.innerHTML = "";
 
-    const saved =
-        getHighlights();
-
     ayahs.forEach(ayah => {
 
-        const div =
+        const card =
             document.createElement("div");
 
-        div.className = "ayah";
+        card.className =
+            "ayah-card";
 
-        const words =
-            ayah.text.split(" ");
+        const text =
+            document.createElement("div");
 
-        words.forEach((word,index)=>{
+        text.className =
+            "ayah";
 
-            const span =
-                document.createElement("span");
+        text.innerText =
+            ayah.text;
 
-            const id =
-                `${ayah.number}-${index}`;
+        const controls =
+            document.createElement("div");
 
-            span.className = "word";
+        controls.className =
+            "status-buttons";
 
-            span.innerText =
-                word + " ";
+        controls.innerHTML = `
+            <button onclick="setAyahStatus(${ayah.number},'learning')">
+                Learning
+            </button>
 
-            if(saved.includes(id)){
-                span.classList.add(
-                    "highlight"
-                );
-            }
+            <button onclick="setAyahStatus(${ayah.number},'memorized')">
+                Memorized
+            </button>
 
-            span.onclick = ()=>{
+            <button onclick="setAyahStatus(${ayah.number},'revision')">
+                Revision
+            </button>
+        `;
 
-                span.classList.toggle(
-                    "highlight"
-                );
+        const status =
+            document.createElement("p");
 
-                saveHighlight(id);
-            };
+        status.innerText =
+            "Status: " +
+            getAyahStatus(
+                ayah.number
+            );
 
-            div.appendChild(span);
-        });
+        card.appendChild(text);
+        card.appendChild(controls);
+        card.appendChild(status);
 
-        container.appendChild(div);
+        container.appendChild(card);
     });
+
+    updateDashboard();
 }
 
-loadSurah();
+window.onload = () => {
+
+    loadProfile();
+
+    loadSurah();
+
+    updateDashboard();
+};

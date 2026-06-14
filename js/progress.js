@@ -1,81 +1,75 @@
-function getProgress() {
+function makeAyahId(surahNumber, ayahNumber) {
+    return `surah-${surahNumber}-ayah-${ayahNumber}`;
+}
 
-    return loadData(
-        STORAGE_KEYS.PROGRESS,
-        {}
-    );
+function getProgress() {
+    return loadData(STORAGE_KEYS.PROGRESS, {});
 }
 
 function saveProgress(progress) {
-
-    saveData(
-        STORAGE_KEYS.PROGRESS,
-        progress
-    );
+    saveData(STORAGE_KEYS.PROGRESS, progress);
 }
 
-function setAyahStatus(ayahNumber, status) {
+function setAyahStatus(surahNumber, ayahNumber, status) {
+    const progress = getProgress();
 
-    const progress =
-        getProgress();
+    const ayahId = makeAyahId(surahNumber, ayahNumber);
 
-    progress[ayahNumber] = status;
+    progress[ayahId] = {
+        surah: Number(surahNumber),
+        ayah: Number(ayahNumber),
+        status: status,
+        updatedAt: new Date().toISOString()
+    };
 
     saveProgress(progress);
 
     updateDashboard();
 }
 
-function getAyahStatus(ayahNumber) {
+function getAyahStatus(surahNumber, ayahNumber) {
+    const progress = getProgress();
 
-    const progress =
-        getProgress();
+    const ayahId = makeAyahId(surahNumber, ayahNumber);
 
-    return progress[ayahNumber] || "not-started";
+    if (!progress[ayahId]) {
+        return "not-started";
+    }
+
+    return progress[ayahId].status;
 }
 
 function updateDashboard() {
+    const progress = getProgress();
 
-    const progress =
-        getProgress();
+    const entries = Object.values(progress);
 
-    const total =
-        Object.keys(progress).length;
+    const total = entries.length;
 
     let memorized = 0;
     let revision = 0;
 
-    Object.values(progress)
-        .forEach(status => {
+    entries.forEach(item => {
+        if (item.status === "memorized") {
+            memorized++;
+        }
 
-            if (status === "memorized") {
-                memorized++;
-            }
-
-            if (status === "revision") {
-                revision++;
-            }
-        });
+        if (item.status === "revision") {
+            revision++;
+        }
+    });
 
     const percent =
         total === 0
             ? 0
-            : Math.round(
-                (memorized / total) * 100
-            );
+            : Math.round((memorized / total) * 100);
 
-    document.getElementById(
-        "progressFill"
-    ).style.width =
+    document.getElementById("progressFill").style.width =
         percent + "%";
 
-    document.getElementById(
-        "progressText"
-    ).innerText =
+    document.getElementById("progressText").innerText =
         percent + "% Complete";
 
-    document.getElementById(
-        "revisionCount"
-    ).innerText =
+    document.getElementById("revisionCount").innerText =
         revision;
 }

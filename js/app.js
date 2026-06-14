@@ -1,9 +1,7 @@
 async function loadSurah() {
 
     const surah =
-        document.getElementById(
-            "surahSelect"
-        ).value;
+        document.getElementById("surahSelect").value;
 
     const response =
         await fetch(
@@ -14,11 +12,12 @@ async function loadSurah() {
         await response.json();
 
     displayAyahs(
+        surah,
         data.data.ayahs
     );
 }
 
-function displayAyahs(ayahs) {
+function displayAyahs(surahNumber, ayahs) {
 
     const container =
         document.getElementById("quranContainer");
@@ -26,6 +25,9 @@ function displayAyahs(ayahs) {
     container.innerHTML = "";
 
     ayahs.forEach(ayah => {
+
+        const ayahNumber =
+            ayah.numberInSurah;
 
         const card =
             document.createElement("div");
@@ -46,16 +48,14 @@ function displayAyahs(ayahs) {
                 document.createElement("span");
 
             const highlightId =
-                `highlight-${ayah.number}-${index}`;
+                `surah-${surahNumber}-ayah-${ayahNumber}-word-${index}`;
 
             span.className = "word";
 
             span.innerText = word + " ";
 
             const savedHighlights =
-                JSON.parse(
-                    localStorage.getItem("lwm_highlights")
-                ) || [];
+                loadData(STORAGE_KEYS.HIGHLIGHTS, []);
 
             if (savedHighlights.includes(highlightId)) {
                 span.classList.add("highlight");
@@ -66,9 +66,7 @@ function displayAyahs(ayahs) {
                 span.classList.toggle("highlight");
 
                 let highlights =
-                    JSON.parse(
-                        localStorage.getItem("lwm_highlights")
-                    ) || [];
+                    loadData(STORAGE_KEYS.HIGHLIGHTS, []);
 
                 if (span.classList.contains("highlight")) {
 
@@ -84,9 +82,9 @@ function displayAyahs(ayahs) {
                         );
                 }
 
-                localStorage.setItem(
-                    "lwm_highlights",
-                    JSON.stringify(highlights)
+                saveData(
+                    STORAGE_KEYS.HIGHLIGHTS,
+                    highlights
                 );
             };
 
@@ -98,25 +96,62 @@ function displayAyahs(ayahs) {
 
         controls.className = "status-buttons";
 
-        controls.innerHTML = `
-            <button onclick="setAyahStatus(${ayah.number}, 'learning')">
-                Learning
-            </button>
-
-            <button onclick="setAyahStatus(${ayah.number}, 'memorized')">
-                Memorized
-            </button>
-
-            <button onclick="setAyahStatus(${ayah.number}, 'revision')">
-                Revision
-            </button>
-        `;
-
         const status =
             document.createElement("p");
 
         status.innerText =
-            "Status: " + getAyahStatus(ayah.number);
+            "Status: " +
+            getAyahStatus(
+                surahNumber,
+                ayahNumber
+            );
+
+        controls.innerHTML = `
+            <button>
+                Learning
+            </button>
+
+            <button>
+                Memorized
+            </button>
+
+            <button>
+                Revision
+            </button>
+        `;
+
+        const buttons =
+            controls.querySelectorAll("button");
+
+        buttons[0].onclick = () => {
+            setAyahStatus(
+                surahNumber,
+                ayahNumber,
+                "learning"
+            );
+
+            status.innerText = "Status: learning";
+        };
+
+        buttons[1].onclick = () => {
+            setAyahStatus(
+                surahNumber,
+                ayahNumber,
+                "memorized"
+            );
+
+            status.innerText = "Status: memorized";
+        };
+
+        buttons[2].onclick = () => {
+            setAyahStatus(
+                surahNumber,
+                ayahNumber,
+                "revision"
+            );
+
+            status.innerText = "Status: revision";
+        };
 
         card.appendChild(text);
         card.appendChild(controls);
@@ -129,10 +164,7 @@ function displayAyahs(ayahs) {
 }
 
 window.onload = () => {
-
     loadProfile();
-
     loadSurah();
-
     updateDashboard();
 };

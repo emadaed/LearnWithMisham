@@ -21,9 +21,7 @@ async function loadSurah() {
 function displayAyahs(ayahs) {
 
     const container =
-        document.getElementById(
-            "quranContainer"
-        );
+        document.getElementById("quranContainer");
 
     container.innerHTML = "";
 
@@ -32,34 +30,84 @@ function displayAyahs(ayahs) {
         const card =
             document.createElement("div");
 
-        card.className =
-            "ayah-card";
+        card.className = "ayah-card";
 
         const text =
             document.createElement("div");
 
-        text.className =
-            "ayah";
+        text.className = "ayah";
 
-        text.innerText =
-            ayah.text;
+        const words =
+            ayah.text.split(" ");
+
+        words.forEach((word, index) => {
+
+            const span =
+                document.createElement("span");
+
+            const highlightId =
+                `highlight-${ayah.number}-${index}`;
+
+            span.className = "word";
+
+            span.innerText = word + " ";
+
+            const savedHighlights =
+                JSON.parse(
+                    localStorage.getItem("lwm_highlights")
+                ) || [];
+
+            if (savedHighlights.includes(highlightId)) {
+                span.classList.add("highlight");
+            }
+
+            span.onclick = () => {
+
+                span.classList.toggle("highlight");
+
+                let highlights =
+                    JSON.parse(
+                        localStorage.getItem("lwm_highlights")
+                    ) || [];
+
+                if (span.classList.contains("highlight")) {
+
+                    if (!highlights.includes(highlightId)) {
+                        highlights.push(highlightId);
+                    }
+
+                } else {
+
+                    highlights =
+                        highlights.filter(
+                            id => id !== highlightId
+                        );
+                }
+
+                localStorage.setItem(
+                    "lwm_highlights",
+                    JSON.stringify(highlights)
+                );
+            };
+
+            text.appendChild(span);
+        });
 
         const controls =
             document.createElement("div");
 
-        controls.className =
-            "status-buttons";
+        controls.className = "status-buttons";
 
         controls.innerHTML = `
-            <button onclick="setAyahStatus(${ayah.number},'learning')">
+            <button onclick="setAyahStatus(${ayah.number}, 'learning')">
                 Learning
             </button>
 
-            <button onclick="setAyahStatus(${ayah.number},'memorized')">
+            <button onclick="setAyahStatus(${ayah.number}, 'memorized')">
                 Memorized
             </button>
 
-            <button onclick="setAyahStatus(${ayah.number},'revision')">
+            <button onclick="setAyahStatus(${ayah.number}, 'revision')">
                 Revision
             </button>
         `;
@@ -68,10 +116,7 @@ function displayAyahs(ayahs) {
             document.createElement("p");
 
         status.innerText =
-            "Status: " +
-            getAyahStatus(
-                ayah.number
-            );
+            "Status: " + getAyahStatus(ayah.number);
 
         card.appendChild(text);
         card.appendChild(controls);

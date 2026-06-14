@@ -2,83 +2,488 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learn With Misham - Quran Study</title>
-
-    <link rel="stylesheet" href="css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Open Online Academy | Quran · Naat · IT Academy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #0b5e3a;
+            --primary-dark: #07452a;
+            --gold: #d4af37;
+            --gold-light: #e9c85e;
+            --card-shadow: 0 20px 35px -12px rgba(0,0,0,0.08);
+        }
+        body { font-family: 'Inter', sans-serif; background: white; color: #1f2d2d; line-height: 1.5; }
+        .main-header {
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            padding: 0.9rem 5%;
+            box-shadow: 0 2px 18px rgba(0,0,0,0.03);
+            border-bottom: 1px solid #eef2f0;
+        }
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, #0f6e46 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .logo span { color: var(--gold); background: none; }
+        .nav-links { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
+        .nav-links a {
+            text-decoration: none;
+            font-weight: 500;
+            color: #2c3e3e;
+            transition: all 0.25s ease;
+            font-size: 0.95rem;
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--primary); font-weight: 600; }
+        .btn-primary {
+            background: var(--primary);
+            color: white !important;
+            padding: 10px 24px;
+            border-radius: 40px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-2px); }
+        .page { display: none; animation: fadeIn 0.3s ease; }
+        .active-page { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px);} to { opacity: 1; transform: translateY(0);} }
+        .container { max-width: 1280px; margin: 0 auto; padding: 3rem 1.5rem; }
+        .hero {
+            background: linear-gradient(105deg, #ffffff 0%, #fef9e6 100%);
+            border-radius: 2rem;
+            padding: 3rem 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; margin-top: 2rem; }
+        .card {
+            background: white;
+            border-radius: 1.25rem;
+            padding: 1.8rem;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.02), 0 2px 6px rgba(0,0,0,0.05);
+            border: 1px solid #f0f2f0;
+        }
+        .card:hover { transform: translateY(-4px); box-shadow: var(--card-shadow); }
+        .testimonial-card { border-left: 4px solid var(--gold); }
+        .step-card { text-align: center; }
+        .step-number {
+            background: var(--gold-light);
+            width: 48px;
+            height: 48px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 60px;
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        .faq-item {
+            background: white;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+        }
+        .faq-question {
+            padding: 1.2rem 1.5rem;
+            font-weight: 700;
+            cursor: pointer;
+            background: #ffffff;
+            display: flex;
+            justify-content: space-between;
+        }
+        .faq-answer { padding: 0 1.5rem 1.2rem 1.5rem; display: none; border-top: 1px solid #eef2f0; }
+        .faq-item.open .faq-answer { display: block; }
+        footer { background: #0a2a1f; color: #ccdcd2; text-align: center; padding: 2rem; }
+        .sticky-enroll {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(11, 94, 58, 0.96);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            z-index: 1100;
+            border-top: 1px solid rgba(212, 175, 55, 0.5);
+        }
+        .sticky-btn {
+            background: white;
+            color: var(--primary);
+            padding: 8px 28px;
+            border-radius: 60px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .sticky-btn-wa { background: #25D366; color: white; }
+        .whatsapp-float {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            background: #25D366;
+            padding: 14px 20px;
+            border-radius: 50px;
+            font-weight: bold;
+            text-decoration: none;
+            color: white;
+            z-index: 1100;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        @media (max-width: 760px) {
+            .header-container { flex-direction: column; }
+            .sticky-enroll { padding: 8px 12px; gap: 8px; }
+            .sticky-btn { padding: 6px 16px; font-size: 0.8rem; }
+            .whatsapp-float { bottom: 85px; padding: 10px 16px; }
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border-radius: 14px;
+            border: 1px solid #d0dbd0;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            font-family: inherit;
+        }
+        .form-card {
+            background: #f9fbf8;
+            padding: 1.8rem;
+            border-radius: 1.5rem;
+        }
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 1rem;
+            display: none;
+            margin-top: 1rem;
+        }
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 1rem;
+            display: none;
+            margin-top: 1rem;
+        }
+    </style>
 </head>
 <body>
 
-    <header>
-        <h1>Learn With Misham</h1>
-        <p>A Project of Jugnu Social Welfare Organization</p>
-    </header>
-
-    <div class="controls">
-
-        <label>Select Surah</label>
-
-        <select id="surahSelect">
-            <option value="1">Al-Fatihah</option>
-            <option value="2">Al-Baqarah</option>
-            <option value="3">Ali-Imran</option>
-        </select>
-
-        <button onclick="loadSurah()">
-            Load Surah
-        </button>
-
-    </div>
-        <section class="profile">
-
-    <h2>Student Profile</h2>
-
-    <input
-        id="studentName"
-        placeholder="Student Name">
-
-    <input
-        id="teacherName"
-        placeholder="Teacher Name">
-
-    <button
-        onclick="saveProfile()">
-        Save Profile
-    </button>
-
-</section>
-
-<section class="dashboard">
-
-    <h2>Progress Dashboard</h2>
-
-    <div class="progress-bar">
-
-        <div
-            id="progressFill"
-            class="progress-fill">
+<header class="main-header">
+    <div class="header-container">
+        <div class="logo">OPEN <span>ONLINE ACADEMY</span></div>
+        <div class="nav-links" id="navLinks">
+            <a href="#" data-page="home">Home</a>
+            <a href="#" data-page="programs">Programs</a>
+            <a href="#" data-page="about">About Us</a>            
+            <a href="#" data-page="faq">FAQ</a>
+            <a href="read.html">📖 Recite</a>
+            <a href="#" class="btn-primary" data-page="freetrial">Enroll Now</a>
         </div>
+    </div>
+</header>
 
+<main>
+    <!-- HOME PAGE -->
+    <div id="home-page" class="page active-page">
+        <div class="container">
+            <div class="hero">
+                <h1 style="font-size: 2.4rem; color: var(--primary);">Empower Faith & Future Skills</h1>
+                <p style="font-size: 1.2rem; margin: 1rem 0;">1-on-1 live online classes: <strong>Quran Tajweed · Naat Artistry · IT & Business Management</strong> for global diaspora students.</p>
+                <a href="#" data-page="freetrial" class="btn-primary" style="display: inline-block;">🚀 Start Free Trial →</a>
+            </div>
+            <h2 style="font-size: 1.8rem; text-align: center; margin-bottom: 2rem;">📌 How to Enroll (4 Easy Steps)</h2>
+            <div class="grid-3" style="grid-template-columns: repeat(auto-fit, minmax(220px,1fr));">
+                <div class="card step-card"><div class="step-number">1</div><h3>Request Trial</h3><p>Fill quick form or WhatsApp "FREE TRIAL"</p></div>
+                <div class="card step-card"><div class="step-number">2</div><h3>Get Assessment</h3><p>We schedule level check & class demo</p></div>
+                <div class="card step-card"><div class="step-number">3</div><h3>Attend 1-on-1 Demo</h3><p>Experience teacher & curriculum fit</p></div>
+                <div class="card step-card"><div class="step-number">4</div><h3>Enroll & Shine</h3><p>Choose plan & begin transformation</p></div>
+            </div>
+            <h2 style="font-size: 1.8rem; text-align: center; margin: 3rem 0 1rem 0;">💬 Parents & Students Love Us</h2>
+            <div class="grid-3">
+                <div class="card testimonial-card">"My daughter improved her Tajweed in just 2 months. Teachers are incredibly patient and professional." <br/>— Aisha K. (Canada)</div>
+                <div class="card testimonial-card">"The Naat training gave my son confidence to recite at local events." <br/>— Yusuf M. (UK)</div>
+                <div class="card testimonial-card">"IT course changed my career path – learned AI web design and bookkeeping." <br/>— Hamza R. (USA)</div>
+            </div>
+        </div>
     </div>
 
-    <p id="progressText">
-        0% Complete
-    </p>
+    <!-- PROGRAMS PAGE -->
+    <div id="programs-page" class="page">
+        <div class="container">
+            <h2 style="color: var(--primary); font-size: 2rem;">Our Academic Disciplines</h2>
+            <div class="grid-3">
+                <div class="card"><h3>📖 Quranic Studies</h3><ul><li>Noorani Qaida & foundational Arabic</li><li>Advanced Tajweed rules</li><li>Hifz/Memorization with revision plans</li><li>Daily Duas & Salah guidance</li></ul></div>
+                <div class="card"><h3>🎤 Naat & Vocal Artistry</h3><ul><li>Sana Khawan training (kids & adults)</li><li>Classical & modern Urdu/Punjabi scales</li><li>Breathing techniques & stage presence</li><li>Rhythm & public delivery</li></ul></div>
+                <div class="card"><h3>💻 IT & Digital Business</h3><ul><li>AI-assisted Web Design (HTML/CSS/JS)</li><li>Inventory Management & QuickBooks</li><li>Budgeting & Financial Reporting</li><li>Professional comms & freelancing prep</li></ul></div>
+            </div>
+            <div style="margin-top: 3rem; background: #f4f7f2; border-radius: 2rem; padding: 1.5rem;">
+                <h3 style="color: var(--primary);">📊 Fee Plans (Monthly Packages)</h3>
+                <table style="width:100%; border-collapse: collapse;">
+                    <thead><tr style="background: var(--primary); color: white;"><th>Program</th><th>2 classes/week</th><th>3 classes/week</th><th>5 classes/week</th></tr></thead>
+                    <tbody>
+                        <tr><td>Quran Tajweed</td><td>$89</td><td>$119</td><td>$159</td></tr>
+                        <tr><td>Naat Artistry</td><td>$79</td><td>$109</td><td>$139</td></tr>
+                        <tr><td>IT Business Track</td><td>$99</td><td>$139</td><td>$189</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 
-    <p>
-        Revision Queue:
-        <span id="revisionCount">
-            0
-        </span>
-    </p>
+    <!-- ABOUT PAGE -->
+    <div id="about-page" class="page">
+        <div class="container">
+            <h2 style="color: var(--primary);">About Suffa Online Academy</h2>
+            <p style="margin: 1rem 0 2rem 0;">We bring premium online education merging Islamic values and modern skills for Western families, inspired by the noble tradition of seeking knowledge.</p>
+            <div class="grid-3">
+                <div class="card"><h3>🎓 Our Vision</h3><p>To raise a generation rooted in Quran, eloquent in Naat, and capable in digital economy.</p></div>
+                <div class="card"><h3>🌍 Global Faculty</h3><p>Certified Quran instructors, Professional Naat coaches, and Industry IT experts.</p></div>
+                <div class="card"><h3>🤝 1-on-1 Attention</h3><p>Customized pace & schedule for each student — no crowded classes.</p></div>
+            </div>
+        </div>
+    </div>
 
-</section>
-    <div id="quranContainer"></div>
+    <!-- FREE TRIAL PAGE - WITH WORKING GOOGLE SHEETS FORM -->
+    <div id="freetrial-page" class="page">
+        <div class="container">
+            <div class="hero" style="background: #eef3e9;">
+                <h2 style="color: var(--primary);">🌟 Start Your Free Trial Class</h2>
+                <p>No commitment. Meet your instructor, evaluate our method, and get personalized roadmap.</p>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;">
+                <div class="form-card">
+                    <h3>📝 Enrollment Form</h3>
+                    <form id="enrollmentForm" onsubmit="event.preventDefault(); submitEnrollment()">
+                        <div class="form-group">
+                            <label>Full Name *</label>
+                            <input type="text" id="fullName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email Address *</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>WhatsApp Number (with country code) *</label>
+                            <input type="tel" id="whatsapp" placeholder="+923095222202" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Student Age *</label>
+                            <input type="number" id="age" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Select Program *</label>
+                            <select id="program" required>
+                                <option value="">Select a course</option>
+                                <option value="Quran Tajweed">Quran Tajweed</option>
+                                <option value="Naat Artistry">Naat Artistry</option>
+                                <option value="IT Business">IT & Business Management</option>
+                                <option value="Combined (Multiple)">Combined (Multiple)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Preferred Time Slot</label>
+                            <select id="timeSlot">
+                                <option value="Morning (9AM-12PM)">Morning (9AM-12PM)</option>
+                                <option value="Afternoon (12PM-3PM)">Afternoon (12PM-3PM)</option>
+                                <option value="Evening (3PM-6PM)">Evening (3PM-6PM)</option>
+                                <option value="Night (6PM-9PM)">Night (6PM-9PM)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Additional Notes (optional)</label>
+                            <textarea rows="3" id="notes" placeholder="Any specific requirements or questions..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary" style="width: 100%;">Submit Trial Request →</button>
+                        <div id="formSuccess" class="success-message">✅ Thank you! We'll contact you on WhatsApp within 24 hours to schedule your free trial.</div>
+                        <div id="formError" class="error-message">❌ Something went wrong. Please try again or contact us on WhatsApp.</div>
+                    </form>
+                </div>
+                <div class="card">
+                    <h3>⚡ WhatsApp Express Enrollment</h3>
+                    <p>Simply message "FREE TRIAL" on WhatsApp and our enrollment team will assist within 30 minutes.</p>
+                    <a href="https://wa.me/923095222202?text=I%20want%20a%20FREE%20trial%20class" target="_blank" style="display: inline-block; background: #25D366; color: white; padding: 12px 24px; text-decoration: none; border-radius: 50px; margin: 1rem 0;">📲 Start via WhatsApp Now</a>
+                    <p style="margin-top: 1rem;">✔️ Preferred method for instant setup.</p>
+                    <div style="margin-top: 2rem; padding: 1rem; background: #f0f7ff; border-radius: 1rem;">
+                        <p><strong>📞 Or Call Us:</strong></p>
+                        <p style="font-size: 1.2rem;">+92 309 5222202</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-<script src="js/storage.js"></script>
-<script src="js/profile.js"></script>
-<script src="js/progress.js"></script>
-<script src="js/app.js"></script>
+    <!-- FAQ PAGE -->
+    <div id="faq-page" class="page">
+        <div class="container">
+            <h2 style="color: var(--primary);">Frequently Asked Questions</h2>
+            <div class="faq-list">
+                <div class="faq-item"><div class="faq-question">📌 What age groups do you accept? <span>+</span></div><div class="faq-answer">We teach kids (5+), teens, and adults. All levels welcome.</div></div>
+                <div class="faq-item"><div class="faq-question">💻 Which platform do you use for classes? <span>+</span></div><div class="faq-answer">Zoom / Google Meet with interactive whiteboard & screen sharing.</div></div>
+                <div class="faq-item"><div class="faq-question">🌎 Do you offer classes for different time zones?<span>+</span></div><div class="faq-answer">Yes! US, Canada, UK, Europe, Australia time zones. 24/7 flexible scheduling.</div></div>
+                <div class="faq-item"><div class="faq-question">🕌 Is there any Quran Ijazah program?<span>+</span></div><div class="faq-answer">Yes, advanced Tajweed & Ijazah available upon completion.</div></div>
+                <div class="faq-item"><div class="faq-question">💰 How can I pay for courses?<span>+</span></div><div class="faq-answer">PayPal, credit cards, Wise, bank transfer. Monthly and quarterly discounts.</div></div>
+            </div>
+        </div>
+    </div>
+</main>
 
+<div class="sticky-enroll">
+    <a href="#" data-page="freetrial" class="sticky-btn">🎓 Book Free Trial</a>
+    <a href="https://wa.me/923095222202?text=I%20need%20enrollment%20info" target="_blank" class="sticky-btn sticky-btn-wa">💬 WhatsApp Enrollment</a>
+</div>
+<a href="https://wa.me/923095222202?text=Hello%2C%20I%20want%20a%20FREE%20trial%20class" target="_blank" class="whatsapp-float">📲 Chat Now</a>
+
+<footer>
+    <p>© 2025 Open Online Academy by LWM— Inspired by the legacy of Suffa. Faith, Knowledge, Innovation.</p>
+    <p>📧 info@openonlineacademy.com | 📞 +92 309 5222202</p>
+</footer>
+
+<script>
+    // Page Navigation
+    const pages = {
+        home: document.getElementById('home-page'),
+        programs: document.getElementById('programs-page'),
+        about: document.getElementById('about-page'),
+        freetrial: document.getElementById('freetrial-page'),
+        faq: document.getElementById('faq-page')
+    };
+
+    function setActivePage(pageId) {
+        Object.values(pages).forEach(page => { if(page) page.classList.remove('active-page'); });
+        if(pages[pageId]) pages[pageId].classList.add('active-page');
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            const linkPage = link.getAttribute('data-page');
+            if(linkPage === pageId) link.classList.add('active');
+            else link.classList.remove('active');
+        });
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    document.querySelectorAll('[data-page]').forEach(el => {
+        el.addEventListener('click', function(e) {
+            e.preventDefault();
+            const page = this.getAttribute('data-page');
+            if(page && pages[page]) setActivePage(page);
+        });
+    });
+
+    // FAQ Accordion
+    document.querySelectorAll('.faq-question').forEach(q => {
+        q.addEventListener('click', () => {
+            const item = q.closest('.faq-item');
+            item.classList.toggle('open');
+            q.querySelector('span').textContent = item.classList.contains('open') ? '−' : '+';
+        });
+    });
+
+    // ========================================
+    // GOOGLE SHEETS ENROLLMENT SUBMISSION
+    // REPLACE THIS URL WITH YOUR DEPLOYED WEB APP URL
+    // ========================================
+    const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbww2NU8vjB07ALdo59Anf1Vj_jLYAmyA4bKe-_zCXzGvt1C1jQGIIHxY5_Pvv3Whab6/exec';
+
+    async function submitEnrollment() {
+        // Get form values
+        const name = document.getElementById('fullName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const whatsapp = document.getElementById('whatsapp').value.trim();
+        const age = document.getElementById('age').value.trim();
+        const program = document.getElementById('program').value;
+        const timeSlot = document.getElementById('timeSlot').value;
+        const notes = document.getElementById('notes').value.trim();
+
+        // Validation
+        if(!name || !email || !whatsapp || !age || !program) {
+            alert('Please fill all required fields (*)');
+            return;
+        }
+
+        // UI feedback
+        const submitBtn = document.querySelector('#freetrial-page button[type="submit"]');
+        const originalText = submitBtn.innerText;
+        submitBtn.innerText = 'Submitting...';
+        submitBtn.disabled = true;
+
+        // Hide any previous messages
+        document.getElementById('formSuccess').style.display = 'none';
+        document.getElementById('formError').style.display = 'none';
+
+        // Prepare URL-encoded data
+        const formData = new URLSearchParams();
+        formData.append('fullName', name);
+        formData.append('email', email);
+        formData.append('whatsapp', whatsapp);
+        formData.append('age', age);
+        formData.append('program', program);
+        formData.append('timeSlot', timeSlot);
+        formData.append('notes', notes || 'No notes');
+
+        try {
+            const response = await fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData.toString()
+            });
+
+            // Check if response is OK (status 200-299)
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const result = await response.json();
+            
+            if (result.success === true) {
+                // Success: show message and reset form
+                const successDiv = document.getElementById('formSuccess');
+                successDiv.style.display = 'block';
+                document.getElementById('enrollmentForm').reset();
+                successDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(() => { successDiv.style.display = 'none'; }, 6000);
+            } else {
+                // Script returned an error
+                throw new Error(result.error || 'Unknown server error');
+            }
+        } catch(error) {
+            console.error('Submission error:', error);
+            const errorDiv = document.getElementById('formError');
+            errorDiv.style.display = 'block';
+            errorDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => { errorDiv.style.display = 'none'; }, 6000);
+        } finally {
+            submitBtn.innerText = originalText;
+            submitBtn.disabled = false;
+        }
+    }
+
+    // Set default active page
+    setActivePage('home');
+</script>
 </body>
 </html>

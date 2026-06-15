@@ -33,6 +33,13 @@
 
     <h2>Student Profile</h2>
 
+    <label>Select Student</label>
+
+    <select
+        id="studentSelect"
+        onchange="switchStudent()">
+    </select>
+
     <input
         id="studentName"
         placeholder="Student Name">
@@ -41,9 +48,8 @@
         id="teacherName"
         placeholder="Teacher Name">
 
-    <button
-        onclick="saveProfile()">
-        Save Profile
+    <button onclick="saveProfile()">
+        Add New Student
     </button>
 
 </section>

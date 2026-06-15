@@ -1,7 +1,8 @@
 const STORAGE_KEYS = {
-    PROFILE: "lwm_profile",
-    PROGRESS: "lwm_progress_v2",
-    HIGHLIGHTS: "lwm_highlights_v2"
+    STUDENTS: "lwm_students_v1",
+    ACTIVE_STUDENT_ID: "lwm_active_student_id",
+    PROGRESS_PREFIX: "lwm_progress_v2_",
+    HIGHLIGHTS_PREFIX: "lwm_highlights_v2_"
 };
 
 function saveData(key, data) {
@@ -20,4 +21,20 @@ function loadData(key, defaultValue = null) {
     } catch {
         return defaultValue;
     }
+}
+
+function getActiveStudentId() {
+    return localStorage.getItem(STORAGE_KEYS.ACTIVE_STUDENT_ID);
+}
+
+function setActiveStudentId(studentId) {
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_STUDENT_ID, studentId);
+}
+
+function getProgressKey() {
+    return STORAGE_KEYS.PROGRESS_PREFIX + getActiveStudentId();
+}
+
+function getHighlightsKey() {
+    return STORAGE_KEYS.HIGHLIGHTS_PREFIX + getActiveStudentId();
 }

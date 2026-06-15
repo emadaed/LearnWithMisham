@@ -55,7 +55,7 @@ function displayAyahs(surahNumber, ayahs) {
             span.innerText = word + " ";
 
             const savedHighlights =
-                loadData(STORAGE_KEYS.HIGHLIGHTS, []);
+                loadData(getHighlightsKey(), []);
 
             if (savedHighlights.includes(highlightId)) {
                 span.classList.add("highlight");
@@ -66,7 +66,7 @@ function displayAyahs(surahNumber, ayahs) {
                 span.classList.toggle("highlight");
 
                 let highlights =
-                    loadData(STORAGE_KEYS.HIGHLIGHTS, []);
+                    loadData(getHighlightsKey(), []);
 
                 if (span.classList.contains("highlight")) {
 
@@ -83,7 +83,7 @@ function displayAyahs(surahNumber, ayahs) {
                 }
 
                 saveData(
-                    STORAGE_KEYS.HIGHLIGHTS,
+                    getHighlightsKey(),
                     highlights
                 );
             };

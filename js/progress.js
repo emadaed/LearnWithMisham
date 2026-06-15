@@ -3,14 +3,34 @@ function makeAyahId(surahNumber, ayahNumber) {
 }
 
 function getProgress() {
-    return loadData(STORAGE_KEYS.PROGRESS, {});
+    const studentId = getActiveStudentId();
+
+    if (!studentId) {
+        return {};
+    }
+
+    return loadData(getProgressKey(), {});
 }
 
 function saveProgress(progress) {
-    saveData(STORAGE_KEYS.PROGRESS, progress);
+    const studentId = getActiveStudentId();
+
+    if (!studentId) {
+        alert("Please add or select a student first");
+        return;
+    }
+
+    saveData(getProgressKey(), progress);
 }
 
 function setAyahStatus(surahNumber, ayahNumber, status) {
+    const student = getActiveStudent();
+
+    if (!student) {
+        alert("Please add or select a student first");
+        return;
+    }
+
     const progress = getProgress();
 
     const ayahId = makeAyahId(
@@ -27,13 +47,6 @@ function setAyahStatus(surahNumber, ayahNumber, status) {
 
     saveProgress(progress);
 
-    console.log(
-        "setAyahStatus called",
-        surahNumber,
-        ayahNumber,
-        status
-    );
-
     saveProgressToCloud(
         surahNumber,
         ayahNumber,
@@ -46,7 +59,10 @@ function setAyahStatus(surahNumber, ayahNumber, status) {
 function getAyahStatus(surahNumber, ayahNumber) {
     const progress = getProgress();
 
-    const ayahId = makeAyahId(surahNumber, ayahNumber);
+    const ayahId = makeAyahId(
+        surahNumber,
+        ayahNumber
+    );
 
     if (!progress[ayahId]) {
         return "not-started";
@@ -56,7 +72,6 @@ function getAyahStatus(surahNumber, ayahNumber) {
 }
 
 function updateDashboard() {
-
     const progress = getProgress();
 
     const entries =
@@ -71,15 +86,12 @@ function updateDashboard() {
     const revisionItems = [];
 
     entries.forEach(item => {
-
         if (item.status === "memorized") {
             memorized++;
         }
 
         if (item.status === "revision") {
-
             revision++;
-
             revisionItems.push(item);
         }
     });
@@ -87,63 +99,40 @@ function updateDashboard() {
     const percent =
         total === 0
             ? 0
-            : Math.round(
-                (memorized / total) * 100
-            );
+            : Math.round((memorized / total) * 100);
 
-    document.getElementById(
-        "progressFill"
-    ).style.width =
+    document.getElementById("progressFill").style.width =
         percent + "%";
 
-    document.getElementById(
-        "progressText"
-    ).innerText =
+    document.getElementById("progressText").innerText =
         percent + "% Complete";
 
-    document.getElementById(
-        "revisionCount"
-    ).innerText =
+    document.getElementById("revisionCount").innerText =
         revision;
 
-    renderRevisionList(
-        revisionItems
-    );
+    renderRevisionList(revisionItems);
 }
-function renderRevisionList(
-    revisionItems
-) {
 
+function renderRevisionList(revisionItems) {
     const list =
-        document.getElementById(
-            "revisionList"
-        );
+        document.getElementById("revisionList");
 
-    if (!list) {
-        return;
-    }
+    if (!list) return;
 
     list.innerHTML = "";
 
-    if (
-        revisionItems.length === 0
-    ) {
-
+    if (revisionItems.length === 0) {
         list.innerHTML =
             "<li>No revision items 🎉</li>";
-
         return;
     }
 
     revisionItems.forEach(item => {
-
         const li =
             document.createElement("li");
 
         const surahName =
-            SURAH_NAMES[
-                item.surah
-            ] ||
+            SURAH_NAMES[item.surah] ||
             `Surah ${item.surah}`;
 
         li.innerText =

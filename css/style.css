@@ -68,3 +68,10 @@ header{
 .status-buttons button {
     margin-right:5px;
 }
+#revisionList {
+    padding-left: 20px;
+}
+
+#revisionList li {
+    margin-bottom: 6px;
+}

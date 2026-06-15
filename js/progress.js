@@ -40,36 +40,99 @@ function getAyahStatus(surahNumber, ayahNumber) {
 }
 
 function updateDashboard() {
+
     const progress = getProgress();
 
-    const entries = Object.values(progress);
+    const entries =
+        Object.values(progress);
 
-    const total = entries.length;
+    const total =
+        entries.length;
 
     let memorized = 0;
     let revision = 0;
 
+    const revisionItems = [];
+
     entries.forEach(item => {
+
         if (item.status === "memorized") {
             memorized++;
         }
 
         if (item.status === "revision") {
+
             revision++;
+
+            revisionItems.push(item);
         }
     });
 
     const percent =
         total === 0
             ? 0
-            : Math.round((memorized / total) * 100);
+            : Math.round(
+                (memorized / total) * 100
+            );
 
-    document.getElementById("progressFill").style.width =
+    document.getElementById(
+        "progressFill"
+    ).style.width =
         percent + "%";
 
-    document.getElementById("progressText").innerText =
+    document.getElementById(
+        "progressText"
+    ).innerText =
         percent + "% Complete";
 
-    document.getElementById("revisionCount").innerText =
+    document.getElementById(
+        "revisionCount"
+    ).innerText =
         revision;
+
+    renderRevisionList(
+        revisionItems
+    );
+}
+function renderRevisionList(
+    revisionItems
+) {
+
+    const list =
+        document.getElementById(
+            "revisionList"
+        );
+
+    if (!list) {
+        return;
+    }
+
+    list.innerHTML = "";
+
+    if (
+        revisionItems.length === 0
+    ) {
+
+        list.innerHTML =
+            "<li>No revision items 🎉</li>";
+
+        return;
+    }
+
+    revisionItems.forEach(item => {
+
+        const li =
+            document.createElement("li");
+
+        const surahName =
+            SURAH_NAMES[
+                item.surah
+            ] ||
+            `Surah ${item.surah}`;
+
+        li.innerText =
+            `${surahName} - Ayah ${item.ayah}`;
+
+        list.appendChild(li);
+    });
 }

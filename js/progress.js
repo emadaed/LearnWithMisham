@@ -13,7 +13,10 @@ function saveProgress(progress) {
 function setAyahStatus(surahNumber, ayahNumber, status) {
     const progress = getProgress();
 
-    const ayahId = makeAyahId(surahNumber, ayahNumber);
+    const ayahId = makeAyahId(
+        surahNumber,
+        ayahNumber
+    );
 
     progress[ayahId] = {
         surah: Number(surahNumber),
@@ -23,6 +26,19 @@ function setAyahStatus(surahNumber, ayahNumber, status) {
     };
 
     saveProgress(progress);
+
+    console.log(
+        "setAyahStatus called",
+        surahNumber,
+        ayahNumber,
+        status
+    );
+
+    saveProgressToCloud(
+        surahNumber,
+        ayahNumber,
+        status
+    );
 
     updateDashboard();
 }

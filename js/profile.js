@@ -1,6 +1,12 @@
 function saveProfile() {
 
+    const existingProfile =
+        loadData(STORAGE_KEYS.PROFILE, {});
+
     const profile = {
+        studentId:
+            existingProfile.studentId || generateStudentId(),
+
         studentName:
             document.getElementById("studentName").value,
 
@@ -16,9 +22,11 @@ function saveProfile() {
         profile
     );
 
-    alert("Profile Saved");
+    alert(
+        "Profile Saved. Student ID: " +
+        profile.studentId
+    );
 }
-
 function loadProfile() {
 
     const profile = loadData(

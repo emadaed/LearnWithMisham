@@ -17,6 +17,44 @@ async function loadSurah() {
     );
 }
 
+function makeHighlightId(surahNumber, ayahNumber, wordIndex) {
+    return `surah-${surahNumber}-ayah-${ayahNumber}-word-${wordIndex}`;
+}
+
+function saveDifficultWordLocally(surahNumber, ayahNumber, wordIndex, word, isHighlighted) {
+    const student = getActiveStudent();
+
+    if (!student) return;
+
+    const difficultWords =
+        loadData(getDifficultWordsKey(), []);
+
+    const highlightId =
+        makeHighlightId(surahNumber, ayahNumber, wordIndex);
+
+    const filteredWords =
+        difficultWords.filter(item => item.highlightId !== highlightId);
+
+    if (isHighlighted) {
+        filteredWords.push({
+            highlightId: highlightId,
+            studentId: student.studentId,
+            studentName: student.studentName || "",
+            teacherName: student.teacherName || "",
+            surah: Number(surahNumber),
+            ayah: Number(ayahNumber),
+            wordIndex: Number(wordIndex),
+            word: word.trim(),
+            addedAt: new Date().toISOString()
+        });
+    }
+
+    saveData(
+        getDifficultWordsKey(),
+        filteredWords
+    );
+}
+
 function displayAyahs(surahNumber, ayahs) {
 
     const container =
@@ -48,7 +86,11 @@ function displayAyahs(surahNumber, ayahs) {
                 document.createElement("span");
 
             const highlightId =
-                `surah-${surahNumber}-ayah-${ayahNumber}-word-${index}`;
+                makeHighlightId(
+                    surahNumber,
+                    ayahNumber,
+                    index
+                );
 
             span.className = "word";
 
@@ -59,6 +101,14 @@ function displayAyahs(surahNumber, ayahs) {
 
             if (savedHighlights.includes(highlightId)) {
                 span.classList.add("highlight");
+
+                saveDifficultWordLocally(
+                    surahNumber,
+                    ayahNumber,
+                    index,
+                    word,
+                    true
+                );
             }
 
             span.onclick = () => {
@@ -93,6 +143,14 @@ function displayAyahs(surahNumber, ayahs) {
                     highlights
                 );
 
+                saveDifficultWordLocally(
+                    surahNumber,
+                    ayahNumber,
+                    index,
+                    word,
+                    isHighlighted
+                );
+
                 if (typeof saveDifficultWordToCloud === "function" && wasHighlighted !== isHighlighted) {
                     saveDifficultWordToCloud(
                         surahNumber,
@@ -101,6 +159,10 @@ function displayAyahs(surahNumber, ayahs) {
                         word,
                         isHighlighted ? "added" : "removed"
                     );
+                }
+
+                if (typeof generateTeacherReport === "function") {
+                    generateTeacherReport();
                 }
             };
 
@@ -147,6 +209,10 @@ function displayAyahs(surahNumber, ayahs) {
             );
 
             status.innerText = "Status: learning";
+
+            if (typeof generateTeacherReport === "function") {
+                generateTeacherReport();
+            }
         };
 
         buttons[1].onclick = () => {
@@ -157,6 +223,10 @@ function displayAyahs(surahNumber, ayahs) {
             );
 
             status.innerText = "Status: memorized";
+
+            if (typeof generateTeacherReport === "function") {
+                generateTeacherReport();
+            }
         };
 
         buttons[2].onclick = () => {
@@ -167,6 +237,10 @@ function displayAyahs(surahNumber, ayahs) {
             );
 
             status.innerText = "Status: revision";
+
+            if (typeof generateTeacherReport === "function") {
+                generateTeacherReport();
+            }
         };
 
         card.appendChild(text);
@@ -177,10 +251,18 @@ function displayAyahs(surahNumber, ayahs) {
     });
 
     updateDashboard();
+
+    if (typeof generateTeacherReport === "function") {
+        generateTeacherReport();
+    }
 }
 
 window.onload = () => {
     loadProfile();
     loadSurah();
     updateDashboard();
+
+    if (typeof generateTeacherReport === "function") {
+        generateTeacherReport();
+    }
 };

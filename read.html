@@ -84,6 +84,33 @@
     </ul>
 
 </section>
+
+<section class="teacher-report">
+
+    <h2>Teacher Report</h2>
+
+    <p>Parent-friendly summary for WhatsApp or email.</p>
+
+    <textarea
+        id="teacherReportText"
+        readonly
+        rows="10">
+    </textarea>
+
+    <button onclick="generateTeacherReport()">
+        Generate Report
+    </button>
+
+    <button onclick="copyTeacherReport()">
+        Copy Report
+    </button>
+
+    <button onclick="shareTeacherReportOnWhatsApp()">
+        Share on WhatsApp
+    </button>
+
+</section>
+
     <div id="quranContainer"></div>
 
 <script src="js/storage.js"></script>
@@ -91,6 +118,7 @@
 <script src="js/progress.js"></script>
 <script src="js/surahNames.js"></script>
 <script src="js/cloud.js"></script>
+<script src="js/report.js"></script>
 <script src="js/app.js"></script>
 
 </body>

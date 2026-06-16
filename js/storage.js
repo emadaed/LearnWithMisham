@@ -2,7 +2,8 @@ const STORAGE_KEYS = {
     STUDENTS: "lwm_students_v1",
     ACTIVE_STUDENT_ID: "lwm_active_student_id",
     PROGRESS_PREFIX: "lwm_progress_v2_",
-    HIGHLIGHTS_PREFIX: "lwm_highlights_v2_"
+    HIGHLIGHTS_PREFIX: "lwm_highlights_v2_",
+    DIFFICULT_WORDS_PREFIX: "lwm_difficult_words_v1_"
 };
 
 function saveData(key, data) {
@@ -37,4 +38,8 @@ function getProgressKey() {
 
 function getHighlightsKey() {
     return STORAGE_KEYS.HIGHLIGHTS_PREFIX + getActiveStudentId();
+}
+
+function getDifficultWordsKey() {
+    return STORAGE_KEYS.DIFFICULT_WORDS_PREFIX + getActiveStudentId();
 }

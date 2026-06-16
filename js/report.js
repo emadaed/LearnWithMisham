@@ -118,6 +118,102 @@ function getUniqueDifficultWords(difficultWords) {
     return Object.values(seen);
 }
 
+function formatDateForReport(date) {
+    return date.toLocaleDateString("en-GB", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric"
+    });
+}
+
+function getCurrentWeekRange() {
+    const now = new Date();
+    const start = new Date(now);
+    const day = start.getDay();
+    const diffToMonday = day === 0 ? -6 : 1 - day;
+
+    start.setDate(start.getDate() + diffToMonday);
+    start.setHours(0, 0, 0, 0);
+
+    const end = new Date(start);
+    end.setDate(start.getDate() + 6);
+    end.setHours(23, 59, 59, 999);
+
+    return { start, end };
+}
+
+function isDateInRange(value, start, end) {
+    if (!value) return false;
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return false;
+    }
+
+    return date >= start && date <= end;
+}
+
+function getWeeklyProgressSummary() {
+    const { start, end } = getCurrentWeekRange();
+    const progress = getProgress();
+    const entries = Object.values(progress);
+
+    const summary = {
+        start,
+        end,
+        totalUpdated: 0,
+        learning: 0,
+        memorized: 0,
+        revision: 0,
+        learningItems: [],
+        memorizedItems: [],
+        revisionItems: []
+    };
+
+    entries.forEach(item => {
+        if (!isDateInRange(item.updatedAt, start, end)) {
+            return;
+        }
+
+        summary.totalUpdated++;
+
+        if (item.status === "learning") {
+            summary.learning++;
+            summary.learningItems.push(item);
+        }
+
+        if (item.status === "memorized") {
+            summary.memorized++;
+            summary.memorizedItems.push(item);
+        }
+
+        if (item.status === "revision") {
+            summary.revision++;
+            summary.revisionItems.push(item);
+        }
+    });
+
+    return summary;
+}
+
+function getWeeklyDifficultWords() {
+    const { start, end } = getCurrentWeekRange();
+    const difficultWords = getDifficultWords();
+
+    return difficultWords.filter(item =>
+        isDateInRange(item.addedAt, start, end)
+    );
+}
+
+function getStudentContactLines(student) {
+    const parentName = student.parentName || "Not added";
+    const parentEmail = student.parentEmail || "Not added";
+    const parentWhatsApp = student.parentWhatsApp || "Not added";
+
+    return `Student: ${student.studentName || ""}\nTeacher: ${student.teacherName || ""}\nParent: ${parentName}\nEmail: ${parentEmail}\nWhatsApp: ${parentWhatsApp}`;
+}
+
 function buildTeacherReportText() {
     const student = getActiveStudent();
 
@@ -131,10 +227,6 @@ function buildTeacherReportText() {
     const revisionRefs = getUniqueAyahReferences(summary.revisionItems);
     const difficultRefs = getUniqueAyahReferences(difficultWords);
     const teacherNote = getTeacherNotes();
-
-    const parentName = student.parentName || "Not added";
-    const parentEmail = student.parentEmail || "Not added";
-    const parentWhatsApp = student.parentWhatsApp || "Not added";
 
     const progressText =
         summary.total === 0
@@ -165,11 +257,7 @@ function buildTeacherReportText() {
 
     return `Learn With Misham — Student Report
 
-Student: ${student.studentName || ""}
-Teacher: ${student.teacherName || ""}
-Parent: ${parentName}
-Email: ${parentEmail}
-WhatsApp: ${parentWhatsApp}
+${getStudentContactLines(student)}
 
 Progress:
 ${progressText}
@@ -187,6 +275,80 @@ Teacher Notes:
 ${teacherNotesText}`;
 }
 
+function buildWeeklyTeacherReportText() {
+    const student = getActiveStudent();
+
+    if (!student) {
+        return "Please add or select a student first.";
+    }
+
+    const weeklySummary = getWeeklyProgressSummary();
+    const weeklyDifficultWords = getWeeklyDifficultWords();
+    const weeklyUniqueDifficultWords = getUniqueDifficultWords(weeklyDifficultWords);
+    const weeklyRevisionRefs = getUniqueAyahReferences(weeklySummary.revisionItems);
+    const weeklyMemorizedRefs = getUniqueAyahReferences(weeklySummary.memorizedItems);
+    const teacherNote = getTeacherNotes();
+
+    const weekText =
+        `${formatDateForReport(weeklySummary.start)} to ${formatDateForReport(weeklySummary.end)}`;
+
+    const weeklyProgressText =
+        weeklySummary.totalUpdated === 0
+            ? "No ayah status updates recorded this week."
+            : `Ayahs Updated: ${weeklySummary.totalUpdated}\nMemorized This Week: ${weeklySummary.memorized}\nLearning This Week: ${weeklySummary.learning}\nRevision Marked This Week: ${weeklySummary.revision}`;
+
+    const memorizedText =
+        weeklyMemorizedRefs.length === 0
+            ? "No new memorized ayahs marked this week."
+            : weeklyMemorizedRefs.slice(0, 8).join("\n");
+
+    const revisionText =
+        weeklyRevisionRefs.length === 0
+            ? "No revision items marked this week."
+            : weeklyRevisionRefs.slice(0, 8).join("\n");
+
+    const difficultWordsText =
+        weeklyUniqueDifficultWords.length === 0
+            ? "No difficult words highlighted this week."
+            : weeklyUniqueDifficultWords.slice(0, 10).join("\n");
+
+    const focusText =
+        weeklyRevisionRefs.length > 0
+            ? `Next week, revise ${weeklyRevisionRefs.slice(0, 3).join(", ")}.`
+            : weeklyUniqueDifficultWords.length > 0
+                ? "Next week, revise the difficult words highlighted above."
+                : "Continue steady recitation, memorization, and revision.";
+
+    const teacherNotesText =
+        teacherNote
+            ? teacherNote
+            : "No teacher note added yet.";
+
+    return `Learn With Misham — Weekly Student Report
+
+Week: ${weekText}
+
+${getStudentContactLines(student)}
+
+Weekly Progress:
+${weeklyProgressText}
+
+Memorized This Week:
+${memorizedText}
+
+Revision Needed:
+${revisionText}
+
+Difficult Words This Week: ${weeklyUniqueDifficultWords.length}
+${difficultWordsText}
+
+Focus Next Week:
+${focusText}
+
+Teacher Notes:
+${teacherNotesText}`;
+}
+
 function generateTeacherReport() {
     const reportBox =
         document.getElementById("teacherReportText");
@@ -194,6 +356,15 @@ function generateTeacherReport() {
     if (!reportBox) return;
 
     reportBox.value = buildTeacherReportText();
+}
+
+function generateWeeklyTeacherReport() {
+    const reportBox =
+        document.getElementById("teacherReportText");
+
+    if (!reportBox) return;
+
+    reportBox.value = buildWeeklyTeacherReportText();
 }
 
 async function copyTeacherReport() {
@@ -213,7 +384,14 @@ async function copyTeacherReport() {
 }
 
 function shareTeacherReportOnWhatsApp() {
-    const reportText = buildTeacherReportText();
+    const reportBox =
+        document.getElementById("teacherReportText");
+
+    const reportText =
+        reportBox && reportBox.value.trim()
+            ? reportBox.value
+            : buildTeacherReportText();
+
     const whatsappUrl =
         "https://wa.me/?text=" + encodeURIComponent(reportText);
 

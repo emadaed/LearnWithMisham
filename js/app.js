@@ -262,6 +262,10 @@ window.onload = () => {
     loadSurah();
     updateDashboard();
 
+    if (typeof loadTeacherNotesField === "function") {
+        loadTeacherNotesField();
+    }
+
     if (typeof generateTeacherReport === "function") {
         generateTeacherReport();
     }

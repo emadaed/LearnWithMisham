@@ -91,10 +91,21 @@
 
     <p>Parent-friendly summary for WhatsApp or email.</p>
 
+    <label for="teacherNotes">Teacher Notes</label>
+
+    <textarea
+        id="teacherNotes"
+        rows="4"
+        placeholder="Write simple guidance for the parent and student. Example: Musa showed good effort today. Please revise Ayah 1 three times before next class."></textarea>
+
+    <button onclick="saveTeacherNotes()">
+        Save Notes
+    </button>
+
     <textarea
         id="teacherReportText"
         readonly
-        rows="10">
+        rows="14">
     </textarea>
 
     <button onclick="generateTeacherReport()">

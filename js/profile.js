@@ -40,6 +40,11 @@ function saveProfile() {
 
         renderStudentDropdown();
         loadProfile();
+
+        if (typeof loadTeacherNotesField === "function") {
+            loadTeacherNotesField();
+        }
+
         loadSurah();
         updateDashboard();
 
@@ -58,6 +63,10 @@ function saveProfile() {
 
     renderStudentDropdown();
     loadProfile();
+
+    if (typeof loadTeacherNotesField === "function") {
+        loadTeacherNotesField();
+    }
 
     updateDashboard();
     loadSurah();
@@ -115,6 +124,11 @@ function switchStudent() {
     setActiveStudentId(studentId);
 
     loadProfile();
+
+    if (typeof loadTeacherNotesField === "function") {
+        loadTeacherNotesField();
+    }
+
     loadSurah();
     updateDashboard();
 }

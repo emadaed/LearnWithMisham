@@ -37,6 +37,55 @@ function getDifficultWords() {
     return loadData(getDifficultWordsKey(), []);
 }
 
+function getTeacherNotes() {
+    const studentId = getActiveStudentId();
+
+    if (!studentId) {
+        return "";
+    }
+
+    const notesData = loadData(getTeacherNotesKey(), {
+        note: "",
+        updatedAt: ""
+    });
+
+    return notesData.note || "";
+}
+
+function loadTeacherNotesField() {
+    const notesBox = document.getElementById("teacherNotes");
+
+    if (!notesBox) return;
+
+    notesBox.value = getTeacherNotes();
+}
+
+function saveTeacherNotes() {
+    const student = getActiveStudent();
+
+    if (!student) {
+        alert("Please add or select a student first.");
+        return;
+    }
+
+    const notesBox = document.getElementById("teacherNotes");
+
+    if (!notesBox) return;
+
+    const note = notesBox.value.trim();
+
+    saveData(getTeacherNotesKey(), {
+        studentId: student.studentId,
+        studentName: student.studentName || "",
+        teacherName: student.teacherName || "",
+        note: note,
+        updatedAt: new Date().toISOString()
+    });
+
+    generateTeacherReport();
+    alert("Teacher notes saved.");
+}
+
 function formatAyahReference(item) {
     const surahName =
         SURAH_NAMES[item.surah] || `Surah ${item.surah}`;
@@ -55,6 +104,20 @@ function getUniqueAyahReferences(items) {
     return Object.values(seen);
 }
 
+function getUniqueDifficultWords(difficultWords) {
+    const seen = {};
+
+    difficultWords.forEach(item => {
+        const word = (item.word || "").trim();
+
+        if (word) {
+            seen[word] = word;
+        }
+    });
+
+    return Object.values(seen);
+}
+
 function buildTeacherReportText() {
     const student = getActiveStudent();
 
@@ -64,43 +127,57 @@ function buildTeacherReportText() {
 
     const summary = getProgressSummary();
     const difficultWords = getDifficultWords();
+    const uniqueDifficultWords = getUniqueDifficultWords(difficultWords);
     const revisionRefs = getUniqueAyahReferences(summary.revisionItems);
-    const difficultWordList = difficultWords.map(item => item.word);
     const difficultRefs = getUniqueAyahReferences(difficultWords);
+    const teacherNote = getTeacherNotes();
 
-    const progressLine =
+    const progressText =
         summary.total === 0
             ? "No ayah progress marked yet."
-            : `Memorized: ${summary.memorized} | Learning: ${summary.learning} | Revision: ${summary.revision}`;
+            : `Memorized: ${summary.memorized}\nLearning: ${summary.learning}\nRevision: ${summary.revision}`;
 
-    const revisionLine =
+    const revisionText =
         revisionRefs.length === 0
             ? "No revision items marked."
-            : revisionRefs.slice(0, 5).join(", ");
+            : revisionRefs.slice(0, 5).join("\n");
 
-    const difficultWordsLine =
-        difficultWordList.length === 0
+    const difficultWordsText =
+        uniqueDifficultWords.length === 0
             ? "No highlighted difficult words."
-            : difficultWordList.slice(0, 10).join("، ");
+            : uniqueDifficultWords.slice(0, 10).join("\n");
 
-    const focusLine =
+    const focusText =
         difficultRefs.length > 0
-            ? `Focus next class: revise highlighted words in ${difficultRefs.slice(0, 3).join(", ")}.`
+            ? `Revise highlighted words in ${difficultRefs.slice(0, 3).join(", ")}.`
             : revisionRefs.length > 0
-                ? `Focus next class: revise ${revisionRefs.slice(0, 3).join(", ")}.`
-                : "Focus next class: continue steady recitation and revision.";
+                ? `Revise ${revisionRefs.slice(0, 3).join(", ")}.`
+                : "Continue steady recitation and revision.";
 
-    return ` Learn With Misham — Student Report
+    const teacherNotesText =
+        teacherNote
+            ? teacherNote
+            : "No teacher note added yet.";
+
+    return `Learn With Misham — Student Report
 
 Student: ${student.studentName || ""}
 Teacher: ${student.teacherName || ""}
 
- Progress: ${progressLine}
- Revision: ${revisionLine}
- Difficult Words: ${difficultWordList.length}
-${difficultWordsLine}
+Progress:
+${progressText}
 
-${focusLine}`;
+Revision Needed:
+${revisionText}
+
+Difficult Words: ${uniqueDifficultWords.length}
+${difficultWordsText}
+
+Focus Next Class:
+${focusText}
+
+Teacher Notes:
+${teacherNotesText}`;
 }
 
 function generateTeacherReport() {

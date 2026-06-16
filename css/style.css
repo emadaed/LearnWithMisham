@@ -102,3 +102,22 @@ header{
     padding: 8px 12px;
     cursor: pointer;
 }
+
+
+.teacher-report label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+}
+
+#teacherNotes {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    margin-bottom: 10px;
+    font-size: 15px;
+    line-height: 1.5;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    resize: vertical;
+}

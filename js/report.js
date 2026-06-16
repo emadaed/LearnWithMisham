@@ -132,6 +132,10 @@ function buildTeacherReportText() {
     const difficultRefs = getUniqueAyahReferences(difficultWords);
     const teacherNote = getTeacherNotes();
 
+    const parentName = student.parentName || "Not added";
+    const parentEmail = student.parentEmail || "Not added";
+    const parentWhatsApp = student.parentWhatsApp || "Not added";
+
     const progressText =
         summary.total === 0
             ? "No ayah progress marked yet."
@@ -163,6 +167,9 @@ function buildTeacherReportText() {
 
 Student: ${student.studentName || ""}
 Teacher: ${student.teacherName || ""}
+Parent: ${parentName}
+Email: ${parentEmail}
+WhatsApp: ${parentWhatsApp}
 
 Progress:
 ${progressText}

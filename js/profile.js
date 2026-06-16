@@ -10,33 +10,46 @@ function saveStudents(students) {
     saveData(STORAGE_KEYS.STUDENTS, students);
 }
 
+function getProfileFormValues() {
+    return {
+        studentName: document.getElementById("studentName").value.trim(),
+        teacherName: document.getElementById("teacherName").value.trim(),
+        parentName: document.getElementById("parentName").value.trim(),
+        parentEmail: document.getElementById("parentEmail").value.trim(),
+        parentWhatsApp: document.getElementById("parentWhatsApp").value.trim()
+    };
+}
+
+function applyStudentUpdates(student, values) {
+    student.studentName = values.studentName;
+    student.teacherName = values.teacherName;
+    student.parentName = values.parentName;
+    student.parentEmail = values.parentEmail;
+    student.parentWhatsApp = values.parentWhatsApp;
+    student.updatedAt = new Date().toISOString();
+
+    return student;
+}
+
 function saveProfile() {
-    const studentName =
-        document.getElementById("studentName").value.trim();
+    const values = getProfileFormValues();
 
-    const teacherName =
-        document.getElementById("teacherName").value.trim();
-
-    if (!studentName) {
+    if (!values.studentName) {
         alert("Please enter student name");
         return;
     }
 
     const students = getStudents();
+    const activeStudentId = getActiveStudentId();
 
-    const student = {
-        studentId: generateStudentId(),
-        studentName: studentName,
-        teacherName: teacherName,
-        createdAt: new Date().toISOString()
-    };
-    const duplicateStudent = students.find(student =>
-        student.studentName.toLowerCase() === studentName.toLowerCase() &&
-        student.teacherName.toLowerCase() === teacherName.toLowerCase()
+    const activeIndex = students.findIndex(student =>
+        student.studentId === activeStudentId
     );
 
-    if (duplicateStudent) {
-        setActiveStudentId(duplicateStudent.studentId);
+    if (activeIndex !== -1) {
+        applyStudentUpdates(students[activeIndex], values);
+        saveStudents(students);
+        setActiveStudentId(students[activeIndex].studentId);
 
         renderStudentDropdown();
         loadProfile();
@@ -45,16 +58,63 @@ function saveProfile() {
             loadTeacherNotesField();
         }
 
+        if (typeof generateTeacherReport === "function") {
+            generateTeacherReport();
+        }
+
         loadSurah();
         updateDashboard();
 
         alert(
-            "This student already exists. Existing profile selected. Student ID: " +
-            duplicateStudent.studentId
+            "Student profile updated. Student ID: " +
+            students[activeIndex].studentId
         );
 
         return;
     }
+
+    const duplicateIndex = students.findIndex(student =>
+        student.studentName.toLowerCase() === values.studentName.toLowerCase() &&
+        (student.teacherName || "").toLowerCase() === values.teacherName.toLowerCase()
+    );
+
+    if (duplicateIndex !== -1) {
+        applyStudentUpdates(students[duplicateIndex], values);
+        saveStudents(students);
+        setActiveStudentId(students[duplicateIndex].studentId);
+
+        renderStudentDropdown();
+        loadProfile();
+
+        if (typeof loadTeacherNotesField === "function") {
+            loadTeacherNotesField();
+        }
+
+        if (typeof generateTeacherReport === "function") {
+            generateTeacherReport();
+        }
+
+        loadSurah();
+        updateDashboard();
+
+        alert(
+            "This student already exists. Existing profile updated and selected. Student ID: " +
+            students[duplicateIndex].studentId
+        );
+
+        return;
+    }
+
+    const student = {
+        studentId: generateStudentId(),
+        studentName: values.studentName,
+        teacherName: values.teacherName,
+        parentName: values.parentName,
+        parentEmail: values.parentEmail,
+        parentWhatsApp: values.parentWhatsApp,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+    };
 
     students.push(student);
 
@@ -68,11 +128,15 @@ function saveProfile() {
         loadTeacherNotesField();
     }
 
+    if (typeof generateTeacherReport === "function") {
+        generateTeacherReport();
+    }
+
     updateDashboard();
     loadSurah();
 
     alert(
-        "Student Saved. Student ID: " +
+        "Student saved. Student ID: " +
         student.studentId
     );
 }
@@ -129,6 +193,10 @@ function switchStudent() {
         loadTeacherNotesField();
     }
 
+    if (typeof generateTeacherReport === "function") {
+        generateTeacherReport();
+    }
+
     loadSurah();
     updateDashboard();
 }
@@ -142,20 +210,31 @@ function getActiveStudent() {
     ) || null;
 }
 
+function setInputValue(id, value) {
+    const input = document.getElementById(id);
+
+    if (!input) return;
+
+    input.value = value || "";
+}
+
 function loadProfile() {
     renderStudentDropdown();
 
     const student = getActiveStudent();
 
     if (!student) {
-        document.getElementById("studentName").value = "";
-        document.getElementById("teacherName").value = "";
+        setInputValue("studentName", "");
+        setInputValue("teacherName", "");
+        setInputValue("parentName", "");
+        setInputValue("parentEmail", "");
+        setInputValue("parentWhatsApp", "");
         return;
     }
 
-    document.getElementById("studentName").value =
-        student.studentName || "";
-
-    document.getElementById("teacherName").value =
-        student.teacherName || "";
+    setInputValue("studentName", student.studentName || "");
+    setInputValue("teacherName", student.teacherName || "");
+    setInputValue("parentName", student.parentName || "");
+    setInputValue("parentEmail", student.parentEmail || "");
+    setInputValue("parentWhatsApp", student.parentWhatsApp || "");
 }

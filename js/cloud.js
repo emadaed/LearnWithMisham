@@ -1,23 +1,7 @@
 const GOOGLE_SCRIPT_URL =
     "https://script.google.com/macros/s/AKfycbxF8egf44FpEx-JgikBILPkZNxv2PoaS82aBwvbdBI76JPaNQwbSxPVho8hr-z3zY4ZQQ/exec";
 
-async function saveProgressToCloud(surahNumber, ayahNumber, status) {
-    const student = getActiveStudent();
-
-    if (!student) {
-        console.warn("No active student. Cloud save skipped.");
-        return;
-    }
-
-    const payload = {
-        studentId: student.studentId,
-        studentName: student.studentName || "",
-        teacherName: student.teacherName || "",
-        surah: surahNumber,
-        ayah: ayahNumber,
-        status: status
-    };
-
+async function postToCloud(payload) {
     try {
         await fetch(GOOGLE_SCRIPT_URL, {
             method: "POST",
@@ -25,15 +9,53 @@ async function saveProgressToCloud(surahNumber, ayahNumber, status) {
             body: JSON.stringify(payload)
         });
 
-        console.log(
-            "Cloud save attempted",
-            payload
-        );
+        console.log("Cloud save attempted", payload);
 
     } catch (error) {
-        console.error(
-            "Cloud save failed",
-            error
-        );
+        console.error("Cloud save failed", error);
     }
+}
+
+async function saveProgressToCloud(surahNumber, ayahNumber, status) {
+    const student = getActiveStudent();
+
+    if (!student) {
+        console.warn("No active student. Cloud progress save skipped.");
+        return;
+    }
+
+    const payload = {
+        type: "progress",
+        studentId: student.studentId,
+        studentName: student.studentName || "",
+        teacherName: student.teacherName || "",
+        surah: Number(surahNumber),
+        ayah: Number(ayahNumber),
+        status: status
+    };
+
+    await postToCloud(payload);
+}
+
+async function saveDifficultWordToCloud(surahNumber, ayahNumber, wordIndex, word, difficultyStatus) {
+    const student = getActiveStudent();
+
+    if (!student) {
+        console.warn("No active student. Difficult word cloud save skipped.");
+        return;
+    }
+
+    const payload = {
+        type: "difficultWord",
+        studentId: student.studentId,
+        studentName: student.studentName || "",
+        teacherName: student.teacherName || "",
+        surah: Number(surahNumber),
+        ayah: Number(ayahNumber),
+        wordIndex: Number(wordIndex),
+        word: word.trim(),
+        difficultyStatus: difficultyStatus
+    };
+
+    await postToCloud(payload);
 }

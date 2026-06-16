@@ -63,12 +63,18 @@ function displayAyahs(surahNumber, ayahs) {
 
             span.onclick = () => {
 
+                const wasHighlighted =
+                    span.classList.contains("highlight");
+
                 span.classList.toggle("highlight");
+
+                const isHighlighted =
+                    span.classList.contains("highlight");
 
                 let highlights =
                     loadData(getHighlightsKey(), []);
 
-                if (span.classList.contains("highlight")) {
+                if (isHighlighted) {
 
                     if (!highlights.includes(highlightId)) {
                         highlights.push(highlightId);
@@ -86,6 +92,16 @@ function displayAyahs(surahNumber, ayahs) {
                     getHighlightsKey(),
                     highlights
                 );
+
+                if (typeof saveDifficultWordToCloud === "function" && wasHighlighted !== isHighlighted) {
+                    saveDifficultWordToCloud(
+                        surahNumber,
+                        ayahNumber,
+                        index,
+                        word,
+                        isHighlighted ? "added" : "removed"
+                    );
+                }
             };
 
             text.appendChild(span);

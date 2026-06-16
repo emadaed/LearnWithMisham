@@ -59,3 +59,43 @@ async function saveDifficultWordToCloud(surahNumber, ayahNumber, wordIndex, word
 
     await postToCloud(payload);
 }
+
+
+function getTeacherNotesForCloud() {
+    const notesField = document.getElementById("teacherNotes");
+
+    if (notesField) {
+        return notesField.value.trim();
+    }
+
+    if (
+        typeof getTeacherNotesKey === "function" &&
+        typeof loadData === "function"
+    ) {
+        return loadData(getTeacherNotesKey(), "");
+    }
+
+    return "";
+}
+
+async function saveStudentProfileToCloud(student) {
+    if (!student) {
+        console.warn("No student profile. Cloud student sync skipped.");
+        return;
+    }
+
+    const payload = {
+        type: "studentProfile",
+        studentId: student.studentId || "",
+        studentName: student.studentName || "",
+        teacherName: student.teacherName || "",
+        parentName: student.parentName || "",
+        parentEmail: student.parentEmail || "",
+        parentWhatsApp: student.parentWhatsApp || "",
+        teacherNotes: getTeacherNotesForCloud(),
+        createdAt: student.createdAt || "",
+        updatedAt: student.updatedAt || new Date().toISOString()
+    };
+
+    await postToCloud(payload);
+}

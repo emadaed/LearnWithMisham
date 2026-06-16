@@ -10,6 +10,17 @@ function saveStudents(students) {
     saveData(STORAGE_KEYS.STUDENTS, students);
 }
 
+
+function syncStudentProfileToCloud(student) {
+    if (
+        typeof saveStudentProfileToCloud === "function" &&
+        student
+    ) {
+        saveStudentProfileToCloud(student);
+    }
+}
+
+
 function getProfileFormValues() {
     return {
         studentName: document.getElementById("studentName").value.trim(),
@@ -50,6 +61,7 @@ function saveProfile() {
         applyStudentUpdates(students[activeIndex], values);
         saveStudents(students);
         setActiveStudentId(students[activeIndex].studentId);
+        syncStudentProfileToCloud(students[activeIndex]);
 
         renderStudentDropdown();
         loadProfile();
@@ -82,6 +94,7 @@ function saveProfile() {
         applyStudentUpdates(students[duplicateIndex], values);
         saveStudents(students);
         setActiveStudentId(students[duplicateIndex].studentId);
+        syncStudentProfileToCloud(students[duplicateIndex]);
 
         renderStudentDropdown();
         loadProfile();
@@ -120,6 +133,7 @@ function saveProfile() {
 
     saveStudents(students);
     setActiveStudentId(student.studentId);
+    syncStudentProfileToCloud(student);
 
     renderStudentDropdown();
     loadProfile();
